@@ -1,20 +1,123 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Historial Biopago</title>
+
+<style>
+
+body{
+font-family:Arial,sans-serif;
+background:#f3f5f7;
+padding:30px;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 0 15px rgba(0,0,0,.1);
+}
+
+input{
+width:100%;
+padding:12px;
+font-size:16px;
+margin-bottom:10px;
+}
+
+button{
+background:#0066cc;
+color:white;
+border:none;
+padding:12px 20px;
+cursor:pointer;
+}
+
+.card{
+margin-top:15px;
+padding:15px;
+border:1px solid #ddd;
+border-radius:8px;
+background:#fafafa;
+}
+
+</style>
+
 </head>
 
 <body>
 
+<div class="container">
+
 <h1>Historial Biopago</h1>
 
-<input placeholder="Ingrese Serial">
+<input
+id="serial"
+placeholder="Ingrese Serial">
 
-<button>
+<button onclick="buscar()">
 Consultar
 </button>
 
-<p>Web en construcción 🚀</p>
+<div id="resultado"></div>
+
+</div>
+
+<script>
+
+async function buscar(){
+
+const serial =
+document.getElementById("serial").value;
+
+document.getElementById("resultado").innerHTML =
+"Buscando...";
+
+const url =
+`https://erp.ex-cle.com/api/resource/Bio%20Service%20Order?fields=["name","ticket_number","bio_serial","service_status"]&filters=[["bio_serial","=","${serial}"]]`;
+
+try{
+
+const resp =
+await fetch(url);
+
+const data =
+await resp.json();
+
+let html =
+`<h3>Ingresos encontrados: ${data.data.length}</h3>`;
+
+data.data.forEach(item=>{
+
+html += `
+<div class="card">
+
+<b>OST:</b> ${item.name}<br>
+<b>Ticket:</b> ${item.ticket_number}<br>
+<b>Estado:</b> ${item.service_status}<br>
+
+</div>
+`;
+
+});
+
+document.getElementById("resultado").innerHTML =
+html;
+
+}catch(error){
+
+document.getElementById("resultado").innerHTML =
+"Error consultando ERP";
+
+}
+
+}
+
+</script>
 
 </body>
 </html>
